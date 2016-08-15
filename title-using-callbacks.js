@@ -1,6 +1,7 @@
 var http = require('http');
 var express = require('express');
 var app = express();
+app.set('view engine', 'pug');
 
 app.get('/I/want/title/', iWantTitle);
 
@@ -51,7 +52,7 @@ function iWantTitle(req, res) {
         var match = re.exec(data.toString());
         if (match && match[2]) {
           console.log(match[2]);
-          callback(index, match[2], array);
+          callback(index, match[2], array, url);
         }
         else {
             finalData += data;
@@ -73,17 +74,18 @@ function iWantTitle(req, res) {
 
 
   // this will be called by each http.get and they will provide their index
-  function callback(index, data, array) {
+  function callback(index, data, array, url) {
     console.log('callback', data);
     console.log('index', index);
     console.log('done', done);
     console.log('lenght', array.length);
 
-    result[index] = data;
+    result[index] = {'url' : url, 'title': data};
     done++;
     // all requests are done, log everything
     if (done == array.length) {
       result.forEach(console.log);
+      res.render('index', { title: 'Hey', titles: result});
     }
   }
 
