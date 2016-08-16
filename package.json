@@ -4,9 +4,11 @@
   "description": "saadbinshahid.com",
   "main": "index.js",
   "dependencies": {
+    "async": "^2.0.1",
     "express": "^4.14.0",
     "pug": "^0.1.0",
     "q": "^1.4.1",
+    "step": "0.0.6",
     "url": "^0.11.0"
   },
   "devDependencies": {},
