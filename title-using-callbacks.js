@@ -1,11 +1,13 @@
 var http = require('http');
 var express = require('express');
+
 var app = express();
 app.set('view engine', 'pug');
-var _url = require('url');
 
+// required url
 app.get('/I/want/title/', iWantTitle);
 
+// throw 404 on others
 app.all('*', function(req, res) {
     res.sendStatus(404);
 });
@@ -14,86 +16,64 @@ app.listen(3000, function() {
     console.log('Server listening on port 3000!');
 });
 
-
+// regex
+var re = /(<\s*title[^>]*>(.+?)<\s*\/\s*title)>/gi;
 
 // function to handle the request
 function iWantTitle(req, res) {
     if (!req.query.address) res.send('No address passed.');
 
-
-
-    // counts the number of requests done
+    // variables initialization
     var done = 0;
-    // stores the requests result
-    var result = [];
-
-    var re = /(<\s*title[^>]*>(.+?)<\s*\/\s*title)>/gi;
-
+    var arrResults = [];
     var arrAddress = [];
 
-    // get addresses
-    _address = req.query.address;
+    var _address = req.query.address;
 
-    console.log(Array.isArray(_address));
-    console.log('_address', _address);
-
+    // has single or multiple address ?
     Array.isArray(_address) ? arrAddress = _address : arrAddress.push(_address)
-    console.log('arrAddress', arrAddress);
-    arrAddress.forEach(processUrl);
 
+    // for each url passed, make get calls
+    arrAddress.forEach(makeGetCall);
 
-    // process url
-    function processUrl(url, index, array) {
-        console.log('processUrl', _url.parse(url, true));
+    // make get call for the url
+    function makeGetCall(url, index, array) {
 
-        var finalData = '';
-        http.get(_url.format(url, true), function(response) {
-            response.setEncoding('utf8');
-            response.on('data', function(data) {
-                var match = re.exec(data.toString());
-                if (match && match[2]) {
-                    console.log(match[2]);
-                    callback(index, match[2], array, url);
-                } else {
-                    finalData += data;
-                }
+        // function to process the response
+        function processGetResponse(response) {
+            
+            // process the response
+            response.on('data', function(chunk) {
+                // process chunks
+                var match = re.exec(chunk.toString());
+                if (match && match[2]) 
+                    processResponseData(index, match[2], array, url);               
             });
-
-            response.on('end', function() {
-                var match = re.exec(finalData);
-                if (match && match[2]) {
-                    console.log(match[2]);
-                    callback(index, match[2], array);
-                }
-            })
-        }).on('error', function() {
-            console.error('errrrrr');
-            callback(index, 'NO RESPONSE', array, url);
-        });
-    }
-
-
-    // this will be called by each http.get and they will provide their index
-    function callback(index, data, array, url) {
-        console.log('callback', data);
-        console.log('index', index);
-        console.log('done', done);
-        console.log('lenght', array.length);
-
-        result[index] = {
-            'url': url,
-            'title': data
+            
         };
+        
+        // function to process the error
+        function processGetError(err) {
+            // return callback                
+            processResponseData(index, 'NO RESPONSE', array, url);
+        };
+
+        // make the request
+        http.get(url, processGetResponse).on('error', processGetError);
+                
+    };
+
+    // function to process the response
+    function processResponseData(index, title, array, url) {
+
+        arrResults[index] = { 'url': url, 'title': title };
         done++;
-        // all requests are done, log everything
-        if (done == array.length) {
-            result.forEach(console.log);
-            res.render('index', {
-                title: 'Hey',
-                titles: result
-            });
-        }
-    }
+        
+        // all requests are done, render the template
+        if (done == array.length) 
+            res.render('index', { arrResults: arrResults });
+
+    };
 
 
 };

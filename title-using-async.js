@@ -8,7 +8,6 @@ app.set('view engine', 'pug');
 // required url
 app.get('/I/want/title/', iWantTitle);
 
-// throw 404 on others
 app.all('*', function(req, res) {
     res.sendStatus(404);
 });
@@ -41,9 +40,9 @@ function iWantTitle(req, res) {
             http.get(url, processGetResponse).on('error', processGetError);
 
             // function to process the response
-            function processGetResponse(res) {
+            function processGetResponse(response) {
                 // process chunks
-                res.on('data', function(chunk) {
+                response.on('data', function(chunk) {
                     var match = re.exec(chunk.toString());
                     if (match && match[2]) 
                         callback(null, { title: match[2], url: url }); // return callback                       
