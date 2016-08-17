@@ -8,6 +8,7 @@ app.set('view engine', 'pug');
 // required url
 app.get('/I/want/title/', iWantTitle);
 
+// throw 404 on others
 app.all('*', function(req, res) {
     res.sendStatus(404);
 });
@@ -53,7 +54,7 @@ function iWantTitle(req, res) {
             function processGetError(err) {
                 // return callback                
                 callback(null, { title: 'NO RESPONSE', url: url });
-            }    
+            };    
         }
     });
 
