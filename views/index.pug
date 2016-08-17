@@ -4,5 +4,5 @@ html
   body
     h1= "Following are the titles of given websites:"
     ul
-      each title in titles
-        li= title.url + ' - ' + title.title
+      each result in arrResults
+        li= result.url + ' - ' + result.title
