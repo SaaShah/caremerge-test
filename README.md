@@ -9,15 +9,15 @@ Solution
 
 - `npm install`
 
-1. Implement the above task using plain node.js callbacks (you can use `express` or `http` or any other helper module but nothing which absracts control flow). 
+- Implement the above task using plain node.js callbacks (you can use `express` or `http` or any other helper module but nothing which absracts control flow). 
 
 `node title-using-callbacks.js`
 
-2. Implement the above using some kind of flow library e.g. [async.js] or [step.js]
+- Implement the above using some kind of flow library e.g. [async.js] or [step.js]
 
 `node title-using-async.js`
 
-3. Implement the above using Promises. You could use any library e.g. [RSVP] or [Q]
+- Implement the above using Promises. You could use any library e.g. [RSVP] or [Q]
 
 `node title-using-promises.js`
 
