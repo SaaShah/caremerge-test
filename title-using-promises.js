@@ -1,6 +1,7 @@
 var http = require('http');
 var express = require('express');
 var Q = require('q');
+var _URL = require('url-parse');
 
 var app = express();
 app.set('view engine', 'pug');
@@ -32,8 +33,14 @@ function iWantTitle(req, res) {
     var _address = req.query.address;
 
     // has single or multiple address ?
-    Array.isArray(_address) ? arrAddress = _address : arrAddress.push(_address);
-    
+    if(Array.isArray(_address)){
+        _address.forEach(function (_u) {
+            arrAddress.push(new _URL(_u, true))
+        })
+    }
+    else 
+        arrAddress.push(new _URL(_address, true))
+
     // for each url passed, make functions objects
     arrAddress.forEach(function(url){
       arrPromises.push(makeAPromise(url));
